@@ -4,22 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ankit — Flutter / App Developer</title>
+<meta name="description" content="Flutter developer building complete mobile apps — UI, backend integration, PDF/invoicing, and payments.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:        #10131A;
-    --panel:     #171B24;
-    --panel-alt: #1C212C;
-    --border:    #2A3040;
-    --text:      #DCE1EC;
-    --text-dim:  #7B8296;
+    --bg:        #0B0E14;
+    --bg-alt:    #10141D;
+    --panel:     #161B24;
+    --panel-alt: #1B212C;
+    --border:    #242B38;
+    --text:      #E3E7F0;
+    --text-dim:  #8890A3;
     --blue:      #5AC8FA;
     --orange:    #F2A65A;
     --green:     #6FCF97;
-    --pink:      #E38FB0;
-    --max: 800px;
+    --maxw: 1120px;
   }
 
   *{ box-sizing:border-box; }
@@ -28,7 +29,6 @@
   body{
     margin:0;
     background: var(--bg);
-    background-image: radial-gradient(circle at 20% 0%, rgba(90,200,250,0.06), transparent 45%);
     color: var(--text);
     font-family:'Space Grotesk', sans-serif;
     font-size:16px;
@@ -37,177 +37,193 @@
   }
 
   .mono{ font-family:'JetBrains Mono', monospace; }
+  .wrap{ max-width: var(--maxw); margin:0 auto; padding:0 32px; }
 
-  a{ color: var(--blue); text-decoration:none; border-bottom:1px solid rgba(90,200,250,0.35); transition: border-color .15s ease, color .15s ease; }
-  a:hover{ border-color: var(--blue); }
-  a:focus-visible{ outline:2px solid var(--blue); outline-offset:3px; }
+  a{ color: var(--blue); text-decoration:none; }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--blue); outline-offset:3px; }
 
-  /* ---- Editor window ---- */
-  .editor{
-    max-width: var(--max);
-    margin: 48px auto;
-    background: var(--panel);
-    border:1px solid var(--border);
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow: 0 40px 80px -40px rgba(0,0,0,0.6), 0 2px 0 rgba(255,255,255,0.02) inset;
-  }
+  ::selection{ background: rgba(90,200,250,0.25); }
 
-  .titlebar{
-    display:flex;
-    align-items:center;
-    gap:16px;
-    padding:12px 16px;
-    background: var(--panel-alt);
+  /* ---- Nav ---- */
+  nav{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background: rgba(11,14,20,0.82);
+    backdrop-filter: blur(10px);
     border-bottom:1px solid var(--border);
   }
-  .dots{ display:flex; gap:7px; }
-  .dot{ width:11px; height:11px; border-radius:50%; }
-  .dot.red{ background:#FF5F57; }
-  .dot.yellow{ background:#FEBC2E; }
-  .dot.green{ background:#28C840; }
-  .tab{
+  nav .wrap{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    height:64px;
+  }
+  .brand{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:600;
+    font-size:0.98rem;
+    color: var(--text);
+  }
+  .brand span{ color: var(--blue); }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:28px;
+    list-style:none;
+    margin:0; padding:0;
+  }
+  .nav-links a{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.85rem;
+    color: var(--text-dim);
+    padding:6px 0;
+    border-bottom:1px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .nav-links a:hover{ color: var(--text); border-color: var(--blue); }
+  .nav-status{
+    display:flex;
+    align-items:center;
+    gap:7px;
     font-family:'JetBrains Mono', monospace;
     font-size:0.78rem;
-    color: var(--text-dim);
-    padding:4px 12px;
-    background: var(--bg);
-    border:1px solid var(--border);
-    border-radius:6px;
+    color: var(--green);
+    border:1px solid rgba(111,207,151,0.35);
+    padding:5px 11px;
+    border-radius:999px;
   }
-
-  .pane{ padding: 40px 44px 52px; }
-
+  .nav-status .pulse{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--green);
+  }
   @media (prefers-reduced-motion: no-preference){
-    .editor{ animation: fade-in 0.5s ease-out; }
-    @keyframes fade-in{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:translateY(0); } }
+    .nav-status .pulse{ animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.35; } }
+  }
+  @media (max-width: 760px){
+    .nav-links{ display:none; }
   }
 
   /* ---- Hero ---- */
-  .path-comment{
+  .hero{
+    padding: 96px 0 84px;
+    border-bottom:1px solid var(--border);
+  }
+  .hero-eyebrow{
     font-family:'JetBrains Mono', monospace;
-    font-size:0.82rem;
+    font-size:0.86rem;
     color: var(--text-dim);
     font-style:italic;
-    margin:0 0 18px;
+    margin:0 0 20px;
   }
-
   .hero h1{
     font-family:'Space Grotesk', sans-serif;
     font-weight:700;
-    font-size: clamp(2.4rem, 7vw, 3.4rem);
+    font-size: clamp(2.6rem, 6vw, 4.1rem);
+    line-height:1.08;
     letter-spacing:-0.02em;
-    margin:0;
-    line-height:1;
+    margin:0 0 22px;
+    max-width:18ch;
     color:#fff;
   }
-  .cursor{
-    display:inline-block;
-    color: var(--blue);
-    margin-left:2px;
-  }
-  @media (prefers-reduced-motion: no-preference){
-    .cursor{ animation: blink 1.1s steps(1) infinite; }
-    @keyframes blink{ 50%{ opacity:0; } }
-  }
-
-  .hero .role{
-    margin: 10px 0 26px;
+  .hero h1 .accent{ color: var(--blue); }
+  .hero p.lede{
     font-size:1.15rem;
     color: var(--text-dim);
+    max-width:56ch;
+    margin:0 0 34px;
+  }
+  .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; }
+  .btn{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.88rem;
+    padding:12px 22px;
+    border-radius:8px;
+    display:inline-block;
+    transition: transform .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn-primary{
+    background: var(--blue);
+    color:#08121A;
+    font-weight:600;
+    border:1px solid var(--blue);
+  }
+  .btn-primary:hover{ transform:translateY(-1px); }
+  .btn-ghost{
+    color: var(--text);
+    border:1px solid var(--border);
+    background:transparent;
+  }
+  .btn-ghost:hover{ border-color: var(--blue); color: var(--blue); }
+
+  @media (prefers-reduced-motion: no-preference){
+    .hero{ animation: fade-in .6s ease-out; }
+    @keyframes fade-in{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:translateY(0); } }
   }
 
-  .status-lines p{
-    margin:0 0 6px;
-    font-size:0.92rem;
-  }
-  .kw{ color: var(--blue); }
-  .str{ color: var(--orange); }
-  .str.available{ color: var(--green); }
+  /* ---- Section shell ---- */
+  .section{ padding: 84px 0; border-bottom:1px solid var(--border); }
+  .section.alt{ background: var(--bg-alt); }
+  .section:last-of-type{ border-bottom:none; }
 
-  /* ---- Sections ---- */
-  section.block{ margin-top:48px; }
-  .comment{
+  .section-head{ margin-bottom:44px; }
+  .section-head .tag{
     font-family:'JetBrains Mono', monospace;
     font-size:0.82rem;
     color: var(--text-dim);
     font-style:italic;
-    margin:0 0 16px;
+    margin:0 0 10px;
   }
-
-  .summary-text{
-    max-width:64ch;
-    font-size:1.08rem;
+  .section-head h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:clamp(1.7rem, 3.4vw, 2.3rem);
+    font-weight:700;
     margin:0;
-    color: var(--text);
+    color:#fff;
   }
 
-  /* ---- Chips ---- */
-  .chips{ display:flex; flex-wrap:wrap; gap:9px; }
+  /* ---- Skills ---- */
+  .chips{ display:flex; flex-wrap:wrap; gap:10px; }
   .chip{
     font-family:'JetBrains Mono', monospace;
-    font-size:0.8rem;
-    padding:6px 12px;
+    font-size:0.85rem;
+    padding:8px 14px;
     border:1px solid var(--border);
-    border-radius:6px;
-    background: var(--panel-alt);
+    border-radius:7px;
+    background: var(--panel);
     color: var(--text);
     transition: border-color .15s ease, color .15s ease;
   }
   .chip:hover{ border-color: var(--blue); color: var(--blue); }
 
-  /* ---- Project "files" ---- */
-  .file{
-    margin-top:26px;
-    border:1px solid var(--border);
-    border-radius:8px;
-    overflow:hidden;
-    background: var(--bg);
-    transition: border-color .2s ease;
-  }
-  .file:hover{ border-color: rgba(90,200,250,0.4); }
-
-  .file-tab{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    padding:10px 16px;
-    background: var(--panel-alt);
+  /* ---- Projects ---- */
+  .project{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:48px;
+    align-items:start;
+    padding:40px 0;
     border-bottom:1px solid var(--border);
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.85rem;
-    color: var(--text);
   }
-  .file-dot{
-    width:8px; height:8px; border-radius:50%;
-    background: var(--blue);
-    flex-shrink:0;
-  }
-
-  .file-body{ padding:22px 20px 26px; }
-
-  .doc-comment{
-    font-family:'JetBrains Mono', monospace;
-    font-size:0.86rem;
-    color: var(--text-dim);
-    font-style:italic;
-    margin:0 0 18px;
-  }
+  .project:last-child{ border-bottom:none; padding-bottom:0; }
+  .project:first-of-type{ padding-top:0; }
+  .project.reverse{ direction: rtl; }
+  .project.reverse > *{ direction: ltr; }
 
   .shots{
     display:grid;
     grid-template-columns: repeat(3, 1fr);
     gap:10px;
-    margin-bottom:20px;
   }
   .shot{
     aspect-ratio: 9/16;
     border:1px solid var(--border);
-    border-radius:6px;
+    border-radius:8px;
     background:
       linear-gradient(135deg, rgba(90,200,250,0.06) 25%, transparent 25%) 0 0/16px 16px,
       linear-gradient(135deg, transparent 75%, rgba(90,200,250,0.06) 75%) 0 0/16px 16px;
-    background-color: var(--panel-alt);
+    background-color: var(--panel);
     overflow:hidden;
     display:flex;
     align-items:center;
@@ -218,7 +234,7 @@
   .shot img{ width:100%; height:100%; object-fit:cover; display:block; }
   .shot span{
     font-family:'JetBrains Mono', monospace;
-    font-size:0.66rem;
+    font-size:0.64rem;
     color: var(--text-dim);
     text-align:center;
     padding:8px;
@@ -226,162 +242,241 @@
     letter-spacing:0.05em;
   }
 
-  .story p{
+  .project-body .file-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.82rem;
+    color: var(--blue);
+    margin-bottom:14px;
+  }
+  .project-body .file-tag::before{
+    content:"";
+    width:7px; height:7px; border-radius:50%;
+    background: var(--blue);
+  }
+  .project-body h3{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:1.5rem;
+    font-weight:700;
+    margin:0 0 10px;
+    color:#fff;
+  }
+  .project-body .tagline{
+    color: var(--text-dim);
+    margin:0 0 20px;
+    font-size:1rem;
+  }
+  .project-body .story p{
     margin:0 0 12px;
     font-size:0.98rem;
-    color: var(--text);
   }
-  .story p:last-child{ margin-bottom:0; }
-
-  .imports{ margin-top:18px; padding-top:16px; border-top:1px solid var(--border); }
-  .imports p{ margin:0 0 5px; font-size:0.84rem; }
-  .imports p:last-child{ margin-bottom:0; }
+  .project-body .story p:last-child{ margin-bottom:0; }
+  .project-body .tags{
+    margin-top:20px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .project-body .tags .chip{
+    font-size:0.76rem;
+    padding:5px 11px;
+    color: var(--text-dim);
+  }
 
   /* ---- Contact ---- */
-  .contact-lines p{ margin:0 0 8px; font-size:0.98rem; }
-  .contact-lines p:last-child{ margin-bottom:0; }
+  .contact-inner{ text-align:left; }
+  .contact-inner h2{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:clamp(2rem, 4.4vw, 2.9rem);
+    font-weight:700;
+    margin:0 0 18px;
+    color:#fff;
+    max-width:20ch;
+  }
+  .contact-inner p{
+    color: var(--text-dim);
+    max-width:56ch;
+    margin:0 0 34px;
+    font-size:1.08rem;
+  }
+  .contact-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .contact-pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.9rem;
+    padding:13px 20px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color: var(--text);
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .contact-pill:hover{ border-color: var(--blue); color: var(--blue); }
+  .contact-pill .k{ color: var(--text-dim); }
 
+  /* ---- Footer ---- */
   footer{
-    margin-top:48px;
-    padding-top:22px;
-    border-top:1px solid var(--border);
+    padding: 32px 0;
+  }
+  footer .wrap{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
     font-family:'JetBrains Mono', monospace;
     font-size:0.8rem;
     color: var(--text-dim);
   }
 
   /* ---- Responsive ---- */
-  @media (max-width: 640px){
-    .editor{ margin:0; border-radius:0; border-left:none; border-right:none; }
-    .pane{ padding: 30px 20px 40px; }
-    .shots{ grid-template-columns: repeat(3, 1fr); gap:6px; }
+  @media (max-width: 860px){
+    .project{ grid-template-columns:1fr; gap:24px; }
+    .project.reverse{ direction: ltr; }
+  }
+  @media (max-width: 560px){
+    .wrap{ padding:0 20px; }
+    .hero{ padding:64px 0 56px; }
+    .section{ padding:56px 0; }
+    .shots{ gap:6px; }
   }
 </style>
 </head>
 <body>
 
-<div class="editor">
-
-  <div class="titlebar">
-    <div class="dots">
-      <span class="dot red"></span>
-      <span class="dot yellow"></span>
-      <span class="dot green"></span>
-    </div>
-    <div class="tab">ankit.dev</div>
+<nav>
+  <div class="wrap">
+    <div class="brand">ankit<span>.dev</span></div>
+    <ul class="nav-links">
+      <li><a href="#work">Work</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-status"><span class="pulse"></span>Available for work</div>
   </div>
+</nav>
 
-  <main class="pane">
+<header class="hero">
+  <div class="wrap">
+    <p class="hero-eyebrow mono">// portfolio.dart</p>
+    <h1>Flutter developer building <span class="accent">complete</span> apps.</h1>
+    <p class="lede">I build mobile UI, backend integration, PDF/invoicing, and payments — not just screens. Two full production apps shipped end-to-end, based in Lucknow, India, working with clients worldwide.</p>
+    <div class="hero-actions">
+      <a href="#work" class="btn btn-primary">View projects</a>
+      <a href="#contact" class="btn btn-ghost">Get in touch</a>
+    </div>
+  </div>
+</header>
 
-    <header class="hero">
-      <p class="path-comment mono">// portfolio.dart</p>
-      <h1>Ankit<span class="cursor">|</span></h1>
-      <p class="role">Flutter / App Developer</p>
-      <div class="status-lines mono">
-        <p><span class="kw">const</span> location = <span class="str">"Lucknow, India"</span>;</p>
-        <p><span class="kw">const</span> remote = <span class="kw">true</span>;</p>
-        <p><span class="kw">const</span> status = <span class="str available">"available_for_work"</span>;</p>
+<section class="section" id="work">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="tag mono">// projects</p>
+      <h2>Selected work</h2>
+    </div>
+
+    <article class="project">
+      <div class="shots">
+        <div class="shot"><img src="screenshots/hardwarehub-1.jpg" alt="HardwareHub Pro dashboard" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">dashboard<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/hardwarehub-2.jpg" alt="HardwareHub Pro invoice screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">invoice<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/hardwarehub-3.jpg" alt="HardwareHub Pro customer ledger" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">ledger<br>screenshot</span></div>
       </div>
-    </header>
-
-    <section class="block">
-      <p class="comment mono">// summary</p>
-      <p class="summary-text">I build complete Flutter apps — mobile UI, backend integration, PDF/invoicing, and payments — not just screens. I've shipped two full production apps end-to-end, handling real business logic like credit ledgers, multi-copy receipts, and multi-tenant deployments.</p>
-    </section>
-
-    <section class="block">
-      <p class="comment mono">// stack</p>
-      <div class="chips">
-        <span class="chip">Flutter</span>
-        <span class="chip">Dart</span>
-        <span class="chip">BLoC</span>
-        <span class="chip">Provider</span>
-        <span class="chip">Dio / REST</span>
-        <span class="chip">PDF Generation</span>
-        <span class="chip">Razorpay</span>
-        <span class="chip">Odoo Integration</span>
-        <span class="chip">PostgreSQL</span>
-        <span class="chip">Docker</span>
+      <div class="project-body">
+        <p class="file-tag mono">hardwarehub_pro.dart</p>
+        <h3>HardwareHub Pro</h3>
+        <p class="tagline">Multi-tenant SaaS app for Indian hardware shop owners — inventory, billing, and GST-compliant invoicing.</p>
+        <div class="story">
+          <p>Built a full customer module — invoice details, ledger history, credit notes, and a three-step refund flow supporting cash, UPI, and store credit — integrated with the backend's reversal, return, and payment wizards.</p>
+          <p>Built a purchase order module from scratch — vendor management, PO creation, and auto-posting of vendor bills — while fixing a recurring class of backend API bugs around computed fields breaking search queries.</p>
+          <p>Solved a production PDF download failure traced to session auth breaking from incorrect service instantiation, and fixed ₹ symbol rendering in generated PDFs using proper Unicode font handling.</p>
+          <p>Shipped per-customer branded APK builds from a single codebase using build-time environment configuration, so each client gets their own configured app.</p>
+        </div>
+        <div class="tags">
+          <span class="chip">Flutter</span>
+          <span class="chip">Odoo Backend</span>
+          <span class="chip">PDF Generation</span>
+          <span class="chip">Multi-tenant</span>
+          <span class="chip">Razorpay</span>
+        </div>
       </div>
-    </section>
+    </article>
 
-    <section class="block">
-      <p class="comment mono">// projects</p>
-
-      <article class="file">
-        <div class="file-tab">
-          <span class="file-dot"></span>
-          hardwarehub_pro.dart
-        </div>
-        <div class="file-body">
-          <p class="doc-comment">/** Multi-tenant SaaS app for Indian hardware shop owners — inventory, billing, and GST-compliant invoicing. */</p>
-
-          <div class="shots">
-            <div class="shot"><img src="screenshots/hardwarehub-1.jpg" alt="HardwareHub Pro dashboard" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">dashboard<br>screenshot</span></div>
-            <div class="shot"><img src="screenshots/hardwarehub-2.jpg" alt="HardwareHub Pro invoice screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">invoice<br>screenshot</span></div>
-            <div class="shot"><img src="screenshots/hardwarehub-3.jpg" alt="HardwareHub Pro customer ledger" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">ledger<br>screenshot</span></div>
-          </div>
-
-          <div class="story">
-            <p>Built a full customer module — invoice details, ledger history, credit notes, and a three-step refund flow supporting cash, UPI, and store credit — integrated with the backend's reversal, return, and payment wizards.</p>
-            <p>Built a purchase order module from scratch — vendor management, PO creation, and auto-posting of vendor bills — while fixing a recurring class of backend API bugs around computed fields breaking search queries.</p>
-            <p>Solved a production PDF download failure traced to session auth breaking from incorrect service instantiation, and fixed ₹ symbol rendering in generated PDFs using proper Unicode font handling.</p>
-            <p>Shipped per-customer branded APK builds from a single codebase using build-time environment configuration, so each client gets their own configured app.</p>
-          </div>
-
-          <div class="imports mono">
-            <p><span class="kw">import</span> <span class="str">'package:flutter/material.dart'</span>;</p>
-            <p><span class="kw">import</span> <span class="str">'package:odoo_backend/odoo.dart'</span>;</p>
-            <p><span class="kw">import</span> <span class="str">'package:pdf_invoice/generator.dart'</span>;</p>
-            <p><span class="kw">import</span> <span class="str">'package:razorpay/payments.dart'</span>;</p>
-          </div>
-        </div>
-      </article>
-
-      <article class="file">
-        <div class="file-tab">
-          <span class="file-dot"></span>
-          feed_shop_app.dart
-        </div>
-        <div class="file-body">
-          <p class="doc-comment">/** Retail management app for an animal feed shop — stock, delivery billing, credit collection, and supplier purchasing. */</p>
-
-          <div class="shots">
-            <div class="shot"><img src="screenshots/feedshop-1.jpg" alt="FeedShopApp stock screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">stock<br>screenshot</span></div>
-            <div class="shot"><img src="screenshots/feedshop-2.jpg" alt="FeedShopApp billing screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">billing<br>screenshot</span></div>
-            <div class="shot"><img src="screenshots/feedshop-3.jpg" alt="FeedShopApp ledger screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">ledger<br>screenshot</span></div>
-          </div>
-
-          <div class="story">
-            <p>Built stock management with out-of-stock blocking, mixed unit handling (bori/quintal/loose), and expiry tracking — a real-world inventory problem most generic templates don't handle.</p>
-            <p>Built a home-delivery billing flow generating three receipt copies — customer WhatsApp copy, delivery slip, and shop copy — from a single transaction.</p>
-            <p>Debugged a backend quirk where change-handler logic silently didn't fire during API writes, requiring business logic to move into model overrides instead — a non-obvious fix most tutorials don't cover.</p>
-            <p>Built a full supplier and purchase module mirroring the customer side, giving shop owners complete sales, purchase, and inventory visibility in one place.</p>
-          </div>
-
-          <div class="imports mono">
-            <p><span class="kw">import</span> <span class="str">'package:flutter/material.dart'</span>;</p>
-            <p><span class="kw">import</span> <span class="str">'package:odoo_backend/odoo.dart'</span>;</p>
-            <p><span class="kw">import</span> <span class="str">'package:offline_sync/local_db.dart'</span>;</p>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <section class="block">
-      <p class="comment mono">// contact</p>
-      <div class="contact-lines mono">
-        <p><span class="kw">final</span> email = <span class="str"><a href="mailto:YOUR_EMAIL_HERE">YOUR_EMAIL_HERE</a></span>;</p>
-        <p><span class="kw">final</span> whatsapp = <span class="str"><a href="tel:YOUR_PHONE_HERE">YOUR_PHONE_HERE</a></span>;</p>
-        <p><span class="kw">final</span> linkedin = <span class="str"><a href="YOUR_LINKEDIN_URL_HERE" target="_blank" rel="noopener">linkedin.com/in/...</a></span>;</p>
-        <p><span class="kw">final</span> github = <span class="str"><a href="YOUR_GITHUB_URL_HERE" target="_blank" rel="noopener">github.com/...</a></span>;</p>
+    <article class="project reverse">
+      <div class="shots">
+        <div class="shot"><img src="screenshots/feedshop-1.jpg" alt="FeedShopApp stock screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">stock<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/feedshop-2.jpg" alt="FeedShopApp billing screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">billing<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/feedshop-3.jpg" alt="FeedShopApp ledger screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">ledger<br>screenshot</span></div>
       </div>
-    </section>
+      <div class="project-body">
+        <p class="file-tag mono">feed_shop_app.dart</p>
+        <h3>FeedShopApp</h3>
+        <p class="tagline">Retail management app for an animal feed shop — stock, delivery billing, credit collection, and supplier purchasing.</p>
+        <div class="story">
+          <p>Built stock management with out-of-stock blocking, mixed unit handling (bori/quintal/loose), and expiry tracking — a real-world inventory problem most generic templates don't handle.</p>
+          <p>Built a home-delivery billing flow generating three receipt copies — customer WhatsApp copy, delivery slip, and shop copy — from a single transaction.</p>
+          <p>Debugged a backend quirk where change-handler logic silently didn't fire during API writes, requiring business logic to move into model overrides instead — a non-obvious fix most tutorials don't cover.</p>
+          <p>Built a full supplier and purchase module mirroring the customer side, giving shop owners complete sales, purchase, and inventory visibility in one place.</p>
+        </div>
+        <div class="tags">
+          <span class="chip">Flutter</span>
+          <span class="chip">Odoo Backend</span>
+          <span class="chip">Offline-first</span>
+          <span class="chip">Hinglish UI</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
 
-    <footer class="mono">// EOF — built with Flutter, mostly. Last updated 2026.</footer>
+<section class="section alt" id="skills">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="tag mono">// stack</p>
+      <h2>Tools & technologies</h2>
+    </div>
+    <div class="chips">
+      <span class="chip">Flutter</span>
+      <span class="chip">Dart</span>
+      <span class="chip">BLoC</span>
+      <span class="chip">Provider</span>
+      <span class="chip">Dio / REST APIs</span>
+      <span class="chip">PDF Generation</span>
+      <span class="chip">Razorpay Payments</span>
+      <span class="chip">Odoo Integration</span>
+      <span class="chip">PostgreSQL</span>
+      <span class="chip">Docker</span>
+      <span class="chip">Play Store / App Store Release</span>
+    </div>
+  </div>
+</section>
 
-  </main>
-</div>
+<section class="section" id="contact">
+  <div class="wrap contact-inner">
+    <p class="tag mono">// contact</p>
+    <h2>Let's build something.</h2>
+    <p>Open to Flutter development work — full apps, feature builds, or backend integration. Based in Lucknow, India, available remote worldwide.</p>
+    <div class="contact-grid">
+      <a class="contact-pill" href="mailto:YOUR_EMAIL_HERE"><span class="k mono">email:</span> YOUR_EMAIL_HERE</a>
+      <a class="contact-pill" href="tel:YOUR_PHONE_HERE"><span class="k mono">phone:</span> YOUR_PHONE_HERE</a>
+      <a class="contact-pill" href="YOUR_LINKEDIN_URL_HERE" target="_blank" rel="noopener"><span class="k mono">linkedin:</span> profile</a>
+      <a class="contact-pill" href="YOUR_GITHUB_URL_HERE" target="_blank" rel="noopener"><span class="k mono">github:</span> profile</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Ankit</span>
+    <span>Built with Flutter, mostly.</span>
+  </div>
+</footer>
 
 </body>
 </html>
