@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ankit — Flutter / App Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:      #EDE9DE;
+    --paper-deep: #E2DBC7;
+    --rule:       #C7BFA8;
+    --ink:        #1E2016;
+    --ink-soft:   #55523F;
+    --stamp:      #8B3A2B;
+    --ledger:     #2F5D4E;
+    --max: 780px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle, rgba(30,32,22,0.05) 1px, transparent 1px);
+    background-size: 16px 16px;
+    background-color: var(--paper-deep);
+    color: var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .sheet{
+    position:relative;
+    max-width: var(--max);
+    margin: 56px auto;
+    background:
+      linear-gradient(180deg, rgba(30,32,22,0.025) 0%, transparent 4%),
+      var(--paper);
+    box-shadow:
+      0 1px 0 var(--rule),
+      0 32px 64px -36px rgba(30,32,22,0.4),
+      0 4px 12px -6px rgba(30,32,22,0.15);
+    padding: 0 44px 60px;
+  }
+
+  /* perforated tear-off edges, top and bottom */
+  .sheet::before,
+  .sheet::after{
+    content:"";
+    position:absolute;
+    left:0; right:0;
+    height:14px;
+    background: radial-gradient(circle at center, var(--paper-deep) 5px, transparent 5.5px);
+    background-size: 24px 14px;
+    background-repeat: repeat-x;
+  }
+  .sheet::before{ top:-7px; }
+  .sheet::after{ bottom:-7px; }
+
+  a{ color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--rule); transition: text-decoration-color 0.15s ease, color 0.15s ease; }
+  a:hover{ text-decoration-color: var(--stamp); }
+  a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--stamp);
+    outline-offset: 3px;
+  }
+
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  /* ---- Header : styled like an invoice header ---- */
+  header.doc-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:24px;
+    padding: 52px 0 28px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .doc-head .who h1{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size: clamp(2.2rem, 6vw, 3.1rem);
+    letter-spacing:-0.02em;
+    margin:0 0 8px;
+    line-height:1;
+    position:relative;
+    display:inline-block;
+  }
+  .doc-head .who h1::after{
+    content:"";
+    position:absolute;
+    left:1px; right:2px; bottom:-6px;
+    height:3px;
+    background: var(--stamp);
+  }
+  .doc-head .who p{
+    margin:14px 0 0;
+    font-size:1.05rem;
+    color: var(--ink-soft);
+  }
+  .doc-fields{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.82rem;
+    text-align:left;
+    min-width: 200px;
+    display:flex;
+    align-items:flex-start;
+    gap:18px;
+  }
+  .doc-fields dl{
+    display:grid;
+    grid-template-columns: auto 1fr;
+    column-gap:14px;
+    row-gap:8px;
+    margin:0;
+  }
+  .doc-fields dt{
+    color: var(--ink-soft);
+    font-weight:500;
+    letter-spacing:0.02em;
+  }
+  .doc-fields dd{
+    margin:0;
+    font-weight:600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Availability stamp ---- */
+  .stamp-badge{
+    flex-shrink:0;
+    width:76px;
+    height:76px;
+    border-radius:50%;
+    border: 2px solid var(--stamp);
+    box-shadow: 0 0 0 3px var(--paper), 0 0 0 4px rgba(139,58,43,0.3);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transform: rotate(-9deg);
+    color: var(--stamp);
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:0.64rem;
+    letter-spacing:0.03em;
+    line-height:1.25;
+    text-transform:uppercase;
+    padding:6px;
+    mix-blend-mode: multiply;
+  }
+
+  /* ---- Generic section rhythm ---- */
+  section{
+    padding: 38px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  section:last-of-type{ border-bottom:none; }
+
+  section.summary p{
+    font-size:1.12rem;
+    max-width: 62ch;
+    margin:0;
+    color: var(--ink);
+  }
+
+  .row-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .row-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background: var(--rule);
+  }
+
+  /* ---- Stack chips ---- */
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:9px;
+  }
+  .chip{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    padding:6px 11px;
+    border:1px solid var(--ink);
+    color: var(--ink);
+    background: var(--paper);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .chip:hover{
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* ---- Projects : itemized line entries ---- */
+  .project{
+    padding: 30px 0 30px 18px;
+    border-bottom: 1px dashed var(--rule);
+    border-left: 3px solid transparent;
+    margin-left: -18px;
+    transition: border-left-color 0.2s ease, background 0.2s ease;
+  }
+  .project:last-child{ border-bottom:none; }
+  .project:hover{
+    border-left-color: var(--stamp);
+    background: rgba(139,58,43,0.03);
+  }
+
+  .project-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:14px;
+  }
+  .project-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:0.95rem;
+    color: var(--stamp);
+    flex-shrink:0;
+    font-variant-numeric: tabular-nums;
+  }
+  .project-head h3{
+    margin:0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:1.35rem;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  .project-tagline{
+    margin: 0 0 16px;
+    color: var(--ink-soft);
+    font-size:0.98rem;
+  }
+
+  .shots{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:10px;
+    margin-bottom:20px;
+  }
+  .shot{
+    aspect-ratio: 9/16;
+    border:1px solid var(--ink);
+    box-shadow: 0 6px 16px -10px rgba(30,32,22,0.5);
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 11px, var(--rule) 11px, var(--rule) 12px),
+      repeating-linear-gradient(90deg, transparent, transparent 11px, var(--rule) 11px, var(--rule) 12px);
+    background-color: var(--paper-deep);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .shot:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px -12px rgba(30,32,22,0.6);
+  }
+  .shot img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .shot span{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.68rem;
+    color: var(--ink-soft);
+    text-align:center;
+    padding:8px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+  }
+
+  .project-story p{
+    margin: 0 0 12px;
+    font-size:0.98rem;
+  }
+  .project-story p:last-child{ margin-bottom:0; }
+
+  .project-tags{
+    margin-top:16px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .project-tags .chip{
+    border-color: var(--rule);
+    color: var(--ink-soft);
+    font-size:0.75rem;
+    background:transparent;
+  }
+  .project-tags .chip:hover{
+    background: var(--ink-soft);
+    color: var(--paper);
+  }
+
+  /* ---- Contact ---- */
+  .contact-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 28px;
+  }
+  .contact-item{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.92rem;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--rule);
+  }
+  .contact-item dt{
+    font-size:0.7rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color: var(--ink-soft);
+    margin-bottom:5px;
+  }
+  .contact-item dd{
+    margin:0;
+    font-weight:600;
+  }
+
+  footer{
+    padding-top:28px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color: var(--ink-soft);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  footer::before{
+    content:"";
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background: var(--ledger);
+    flex-shrink:0;
+  }
+
+  /* ---- One deliberate load moment ---- */
+  @media (prefers-reduced-motion: no-preference){
+    header.doc-head{
+      animation: settle 0.6s ease-out;
+    }
+    @keyframes settle{
+      from{ opacity:0; transform: translateY(8px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+  }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 640px){
+    .sheet{ margin:24px auto; padding: 0 20px 40px; }
+    .sheet::before, .sheet::after{ display:none; }
+    header.doc-head{ padding-top:32px; flex-direction:column; }
+    .doc-fields{ text-align:left; width:100%; justify-content:space-between; }
+    .shots{ grid-template-columns: repeat(3, 1fr); gap:6px; }
+    .contact-grid{ grid-template-columns: 1fr; }
+    .project{ margin-left:0; padding-left:14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sheet">
+
+  <header class="doc-head">
+    <div class="who">
+      <h1>ANKIT</h1>
+      <p>Flutter / App Developer</p>
+    </div>
+    <div class="doc-fields">
+      <dl>
+        <dt>Location</dt><dd>Lucknow, India</dd>
+        <dt>Focus</dt><dd>Mobile app development</dd>
+        <dt>Remote</dt><dd>Yes, worldwide</dd>
+      </dl>
+      <div class="stamp-badge" aria-label="Available for work">Available<br>for work</div>
+    </div>
+  </header>
+
+  <section class="summary">
+    <p class="row-label">Summary</p>
+    <p>I build complete Flutter apps — mobile UI, backend integration, PDF/invoicing, and payments — not just screens. I've shipped two full production apps end-to-end, handling real business logic like credit ledgers, multi-copy receipts, and multi-tenant deployments.</p>
+  </section>
+
+  <section>
+    <p class="row-label">Stack</p>
+    <div class="chips">
+      <span class="chip">Flutter</span>
+      <span class="chip">Dart</span>
+      <span class="chip">BLoC</span>
+      <span class="chip">Provider</span>
+      <span class="chip">Dio / REST</span>
+      <span class="chip">PDF Generation</span>
+      <span class="chip">Razorpay</span>
+      <span class="chip">Odoo Integration</span>
+      <span class="chip">PostgreSQL</span>
+      <span class="chip">Docker</span>
+    </div>
+  </section>
+
+  <section>
+    <p class="row-label">Projects</p>
+
+    <div class="project">
+      <div class="project-head">
+        <span class="project-num mono">01</span>
+        <h3>HardwareHub Pro</h3>
+      </div>
+      <p class="project-tagline">Multi-tenant SaaS app for Indian hardware shop owners — inventory, billing, and GST-compliant invoicing.</p>
+
+      <div class="shots">
+        <div class="shot"><img src="screenshots/hardwarehub-1.jpg" alt="HardwareHub Pro dashboard" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">dashboard<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/hardwarehub-2.jpg" alt="HardwareHub Pro invoice screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">invoice<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/hardwarehub-3.jpg" alt="HardwareHub Pro customer ledger" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">ledger<br>screenshot</span></div>
+      </div>
+
+      <div class="project-story">
+        <p>Built a full customer module — invoice details, ledger history, credit notes, and a three-step refund flow supporting cash, UPI, and store credit — integrated with the backend's reversal, return, and payment wizards.</p>
+        <p>Built a purchase order module from scratch — vendor management, PO creation, and auto-posting of vendor bills — while fixing a recurring class of backend API bugs around computed fields breaking search queries.</p>
+        <p>Solved a production PDF download failure traced to session auth breaking from incorrect service instantiation, and fixed ₹ symbol rendering in generated PDFs using proper Unicode font handling.</p>
+        <p>Shipped per-customer branded APK builds from a single codebase using build-time environment configuration, so each client gets their own configured app.</p>
+      </div>
+
+      <div class="project-tags">
+        <span class="chip">Flutter</span>
+        <span class="chip">Odoo Backend</span>
+        <span class="chip">PDF Generation</span>
+        <span class="chip">Multi-tenant</span>
+        <span class="chip">Razorpay</span>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <span class="project-num mono">02</span>
+        <h3>FeedShopApp</h3>
+      </div>
+      <p class="project-tagline">Retail management app for an animal feed shop — stock, delivery billing, credit collection, and supplier purchasing.</p>
+
+      <div class="shots">
+        <div class="shot"><img src="screenshots/feedshop-1.jpg" alt="FeedShopApp stock screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">stock<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/feedshop-2.jpg" alt="FeedShopApp billing screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">billing<br>screenshot</span></div>
+        <div class="shot"><img src="screenshots/feedshop-3.jpg" alt="FeedShopApp ledger screen" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><span style="display:none;">ledger<br>screenshot</span></div>
+      </div>
+
+      <div class="project-story">
+        <p>Built stock management with out-of-stock blocking, mixed unit handling (bori/quintal/loose), and expiry tracking — a real-world inventory problem most generic templates don't handle.</p>
+        <p>Built a home-delivery billing flow generating three receipt copies — customer WhatsApp copy, delivery slip, and shop copy — from a single transaction.</p>
+        <p>Debugged a backend quirk where change-handler logic silently didn't fire during API writes, requiring business logic to move into model overrides instead — a non-obvious fix most tutorials don't cover.</p>
+        <p>Built a full supplier and purchase module mirroring the customer side, giving shop owners complete sales, purchase, and inventory visibility in one place.</p>
+      </div>
+
+      <div class="project-tags">
+        <span class="chip">Flutter</span>
+        <span class="chip">Odoo Backend</span>
+        <span class="chip">Offline-first</span>
+        <span class="chip">Hinglish UI</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="row-label">Contact</p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <dt>Email</dt>
+        <dd><a href="mailto:YOUR_EMAIL_HERE">YOUR_EMAIL_HERE</a></dd>
+      </div>
+      <div class="contact-item">
+        <dt>WhatsApp / Phone</dt>
+        <dd><a href="tel:YOUR_PHONE_HERE">YOUR_PHONE_HERE</a></dd>
+      </div>
+      <div class="contact-item">
+        <dt>LinkedIn</dt>
+        <dd><a href="YOUR_LINKEDIN_URL_HERE" target="_blank" rel="noopener">linkedin.com/in/...</a></dd>
+      </div>
+      <div class="contact-item">
+        <dt>GitHub</dt>
+        <dd><a href="YOUR_GITHUB_URL_HERE" target="_blank" rel="noopener">github.com/...</a></dd>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built with Flutter, mostly. Last updated 2026.
+  </footer>
+
+</div>
+
+</body>
+</html>
